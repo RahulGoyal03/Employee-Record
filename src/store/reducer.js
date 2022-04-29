@@ -6,31 +6,52 @@ import {
   EDIT_EMPLOYEE,
 } from "./actionType";
 
+import {loadData,saveData,existingData,deleteFromLS} from "../components/utils/localStorage"
+// import { dataChunks } from "../components/utils/chunksdata";
+// console.log(dataChunks())
 
 const initial = {
-  emp: [] };
+  emp: [],
+  data: loadData("employees") || []
+ };
+ console.log("initial",initial)  
 
 export const reducer = (state = initial, { type, payload }) => {
-  // console.log(type,payload)
+  
   switch (type) {
+ 
     case FETCH_DATA: {
+      console.log("Fetchpayload",payload)
+      saveData("employees", payload)
+
       return {
         ...state,
         emp: payload,
+        data: payload
       };
     }
+    
+
     case ADD_EMPLOYEE_DATA: {
+      // existingData("employees", payload)
       return {
         ...state,
         emp: [...state.emp, payload],
+        data : existingData("employees", payload)
       };
     }
     case DELETE_EMPLOYEE_DATA: {
+     
+      // deleteFromLS("employees", payload)
       // console.log("delete", payload);
-      const filteredData = state.emp.filter((emp) => emp.id !== payload);
+
+      // const filteredData = state.data.filter((emp) => emp.id !== payload);
+    
+      // console.log("filteredData",filteredData)
       return {
         ...state,
-        emp: filteredData,
+        emp: deleteFromLS("employees", payload),
+        data: deleteFromLS("employees", payload),
       };
     }
 
@@ -43,16 +64,16 @@ export const reducer = (state = initial, { type, payload }) => {
         }
         return emp;
       });
-    console.log("data",newData);
+    // console.log("data",newData);
       return {
         ...state,
-        emp: newData,
+        emp: newData
       };
       
     }
 
     case RESET_ALL_DATA: {
-      console.log("rahul");
+      // console.log("rahul");
       return initial;
     }
 

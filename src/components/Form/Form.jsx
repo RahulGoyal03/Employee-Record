@@ -23,9 +23,9 @@ import { compose, withReducer, withHandlers, withState, lifecycle } from "recomp
 const required = (value) => (value ? undefined : "Required");
 
 const setCity = (args, state, utils) => {
-  console.log(state);
+  // console.log(state);
   utils.changeValue(state, "cityDropDown", () => args[0]);
-  console.log(state.cityDropDown);
+  // console.log(state.cityDropDown);
 };
 
 function MyForm( {selected,handleAddUser } ) {
@@ -34,9 +34,9 @@ function MyForm( {selected,handleAddUser } ) {
   // const [selected, setSelected] = useState({});
 
   const store = useSelector((store) => store.emp);
-  console.log(store);
+  // console.log(store);
   const { id } = useParams();
-  console.log(id);
+  // console.log(id);
 
   // console.log(store)
   // console.log(employDetails)
@@ -52,7 +52,7 @@ function MyForm( {selected,handleAddUser } ) {
   //   dispatch(editEmployee(selected));
   // }, [selected]);
 
-  console.log("selectedEmployee", selected);
+  // console.log("selectedEmployee", selected);
 
   const navigate = useNavigate();
 
@@ -67,7 +67,7 @@ function MyForm( {selected,handleAddUser } ) {
       navigate("/");
     }else{
     payload.id = store.length + 1 
-     console.log(payload);
+    //  console.log(payload);
     dispatch(addemployeedata(payload));
     // dispatch(editEmployee(payload));
     navigate("/");

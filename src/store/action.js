@@ -1,4 +1,13 @@
-import { FETCH_DATA , ADD_EMPLOYEE_DATA,DELETE_EMPLOYEE_DATA ,RESET_ALL_DATA, EDIT_EMPLOYEE } from "./actionType";
+import {
+  FETCH_DATA,
+  ADD_EMPLOYEE_DATA,
+  DELETE_EMPLOYEE_DATA,
+  RESET_ALL_DATA,
+  EDIT_EMPLOYEE
+} from "./actionType";
+
+
+
 export const fechdata = (payload) => {
   // console.log("action",data)
   return {
@@ -7,15 +16,13 @@ export const fechdata = (payload) => {
   };
 };
 
-
 export const addemployeedata = (payload) => {
-  console.log("action",payload)
+  // console.log("action",payload)
   return {
     type: ADD_EMPLOYEE_DATA,
     payload,
   };
 };
-
 
 export const deleteemployee = (payload) => {
   // console.log("action",payload)
@@ -25,9 +32,8 @@ export const deleteemployee = (payload) => {
   };
 };
 
-
 export const editEmployee = (payload) => {
-  console.log("edit",payload)
+  // console.log("edit",payload)
   return {
     type: EDIT_EMPLOYEE,
     payload,
@@ -35,7 +41,7 @@ export const editEmployee = (payload) => {
 };
 
 export const reset = () => {
-  console.log("action")
+  // console.log("action")
   return {
     type: RESET_ALL_DATA,
   };

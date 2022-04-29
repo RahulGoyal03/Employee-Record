@@ -5,17 +5,29 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect } from "react";
 import { fechdata } from "./store/action";
 import { employees } from "./store/data";
+
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import MyForm from "./components/Form/Form";
 // import  DataShow  from "./components/ShowData"
 
 // console.log(employees)
 function App() {
-  const data = useSelector((state) => state);
-  console.log(data)
+  // const data = useSelector((state) => state);
+  // console.log(data)
   const dispatch = useDispatch();
+  
+  const dataFromLocalStorage = () => {
+    let data = localStorage.getItem("employees");
+    // console.log(data)
+    if (data) {
+      return JSON.parse(data);
+    } else {
+      return [];
+    }
+  };
+
   useEffect(() => {
-    dispatch(fechdata(employees));
+    dispatch(fechdata(dataFromLocalStorage()));
   }, []);
   // console.log(data)
 
