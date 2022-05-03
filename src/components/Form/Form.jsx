@@ -36,6 +36,7 @@ function MyForm( {selected,handleAddUser } ) {
   const store = useSelector((store) => store.emp);
   // console.log(store);
   const { id } = useParams();
+
   // console.log(id);
 
   // console.log(store)
@@ -92,7 +93,7 @@ function MyForm( {selected,handleAddUser } ) {
       >
         {({ handleSubmit, form, values, submitting, valid  }) => (
           <form onSubmit={handleSubmit}>
-            <UserName /> //usestate//
+            <UserName /> 
             <Email  />
             <Designation />
             <Phone />

@@ -2,20 +2,34 @@ import React from "react";
 import "./Table-Item.css";
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { deleteemployee } from "../store/action";
-import { useNavigate,useParams } from "react-router-dom";
+import { deleteemployee, chunks } from "../store/action";
+import { useNavigate, useParams, Link } from "react-router-dom";
+import { dataChunks } from "./utils/chunksdata";
+import history from "./utils/history";
+
+// import { useHistory } from "react-router-dom";
+// console.log("dataChunks", dataChunks())
 
 // import Pagination from "./Pagination";
 
 const TableItem = () => {
-  const dispatch = useDispatch();
-  // const {num} = useParams()
-  const navigate = useNavigate();
+  // let history = useHistory();
+  const getQueryParams = (query = null) =>
+    (query || window.location.search.replace("?", ""))
+      .split("&")
+      .map((e) => e.split("=").map(decodeURIComponent))
+      .reduce((r, [k, v]) => ((r[k] = v), r), {});
 
+  console.log("query", getQueryParams());
+
+  const dispatch = useDispatch();
+  // const { num } = useParams();
+  // console.log("param", num);
+  const navigate = useNavigate();
 
   const editForm = (id) => {
     // console.log(id);
-    let employDetails = data.filter((emp) => emp.id === id);
+    let employDetails = data.pagedata.filter((emp) => emp.id === id);
     // console.log(employDetails);
     // dispatch(editEmployee(id));
     navigate(`/form/${id}`);
@@ -26,7 +40,7 @@ const TableItem = () => {
       dispatch(deleteemployee(id));
     }
   };
-  
+
   // --------------------------------------------------------------------------------
   // const getLocalData = () =>{
   //   let data = localStorage.getItem("employees")
@@ -42,7 +56,7 @@ const TableItem = () => {
 
   // ------------------------------------------------------------------
 
-  const data = useSelector((state) => state.data);
+  const data = useSelector((state) => state);
   // console.log(data)
   console.log("employees", data);
 
@@ -55,15 +69,25 @@ const TableItem = () => {
     /* ____________________Pagination__________________________ */
   }
 
-  // const [pages,setPages] = useState(1)
+  const [pages, setPages] = useState(0);
   const [start, setStart] = useState(0);
   const [limit, setLimit] = useState(10);
   const [error, setError] = useState("");
   const [disable, setDisable] = useState(0);
+  // const [persist, setPersist] = useState(data.pagedata);
+
+  useEffect(() => {
+    // setPersist(data.pagedata)
+    setPages(getQueryParams().page);
+  }, [disable]);
+  console.log("pageNum", pages);
+  // console.log("persist",persist)
+
+  // dataChunks(limit / 10,limit,limit + 10 )
 
   // console.log(data.length)
   // console.log(page)
-  const number = new Array(Math.ceil(data.length / 10)).fill(0);
+  const number = new Array(Math.ceil(data.data.length / 10)).fill(0);
   // console.log(number)
   // starting limit - limit = offest
 
@@ -72,33 +96,38 @@ const TableItem = () => {
   const nextPage = () => {
     // navigate(`/pg_ ${num}`)
     // console.log("start", start, limit)
-    if (limit < data.length) {
-      setStart(limit);
-      setLimit(limit + 10);
-      setDisable(limit / 10);
-      // setPages(pages+1)
-      // console.log("rahul")
-      setError("");
-    } else {
-      setError("No More Data Found");
-    }
+    // navigate(`pg_${limit / 10}`);
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    currentUrlParams.set("page", limit / 10);
+    history.push(window.location.pathname + "?" + currentUrlParams.toString());
+
+    setStart(limit);
+    setLimit(limit + 10);
+    setDisable(limit / 10);
+    dispatch(chunks(dataChunks(limit / 10, limit, limit + 10)));
+
+    // setPages(pages+1)
+    // console.log("rahul")
   };
 
   // 10 20 => 0 10
 
   const prevPage = () => {
     // console.log("start", start, limit)
-    
-    if (start > 0) {
-      
-      setStart(start - 10);
-      setLimit(start);
-      setDisable((start - 10) / 10);
-      // setPages(pages-1)
-      setError("");
-    } else {
-      setError("This is First Page");
-    }
+    setStart(start - 10);
+    setLimit(start);
+    setDisable((start - 10) / 10);
+    // setPages(pages-1)
+    console.log("start", start - 10);
+    console.log("limit", start);
+    console.log("page", (start - 10) / 10);
+    dispatch(chunks(dataChunks((start - 10) / 10, start - 10, start)));
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    currentUrlParams.set("page", (start - 10) / 10);
+    history.push(window.location.pathname + "?" + currentUrlParams.toString());
+
+    setError("");
+
     // navigate(`/pg_ ${num}`)
   };
 
@@ -107,15 +136,28 @@ const TableItem = () => {
     setStart(10 * i);
     setLimit(10 + 10 * i);
     setDisable(i);
-   
+    dispatch(chunks(dataChunks(i, 10 * i, 10 + 10 * i)));
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    currentUrlParams.set("page", i);
+    history.push(window.location.pathname + "?" + currentUrlParams.toString());
   };
+
+  useEffect(() => {
+    let currentUrlParams = new URLSearchParams(window.location.search);
+    currentUrlParams.set("page", disable);
+    history.push(window.location.pathname + "?" + currentUrlParams.toString());
+  }, []);
+  // navigate(`/pg_/${getQueryParams().page}`);
 
   return (
     <>
       {/* <Pagination data={data}  pageLimit={10} dataLimit={10}  /> */}
 
       {/* <Redirect to={`/form/${id}`} /> */}
-      <button onClick={() => nextPage()}> Next</button>
+     
+      <button onClick={() => nextPage()} disabled={limit >= data.data.length}>
+        Next
+      </button>
       {number.map((el, i) => (
         <button
           name={i}
@@ -126,9 +168,11 @@ const TableItem = () => {
           {i + 1}
         </button>
       ))}
-      <button onClick={() => prevPage()}>Prev</button>
+      <button onClick={() => prevPage()} disabled={start <= 0}>
+        Prev
+      </button>
       <h1>{error}</h1>
-      {data.slice(start, limit).map((employ) => (
+      {data.pagedata.map((employ) => (
         <div className="main_box" key={employ.id}>
           <div>{employ.id}</div>
           <div>

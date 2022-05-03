@@ -3,10 +3,17 @@ import {
   ADD_EMPLOYEE_DATA,
   DELETE_EMPLOYEE_DATA,
   RESET_ALL_DATA,
-  EDIT_EMPLOYEE
+  EDIT_EMPLOYEE,
+  CHUNKS_DATA,
 } from "./actionType";
 
-
+export const chunks = (payload) => {
+  console.log("ChucksAction", payload);
+  return {
+    type: CHUNKS_DATA,
+    payload,
+  };
+};
 
 export const fechdata = (payload) => {
   // console.log("action",data)

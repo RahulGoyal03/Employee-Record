@@ -4,53 +4,69 @@ import {
   DELETE_EMPLOYEE_DATA,
   RESET_ALL_DATA,
   EDIT_EMPLOYEE,
+  CHUNKS_DATA,
 } from "./actionType";
 
-import {loadData,saveData,existingData,deleteFromLS} from "../components/utils/localStorage"
-// import { dataChunks } from "../components/utils/chunksdata";
-// console.log(dataChunks())
+import {
+  loadData,
+  saveData,
+  existingData,
+  deleteFromLS,
+} from "../components/utils/localStorage";
+import { dataChunks } from "../components/utils/chunksdata";
+// console.log("Chunks",dataChunks())
 
 const initial = {
   emp: [],
-  data: loadData("employees") || []
- };
- console.log("initial",initial)  
+  data: loadData("employees") || [],
+  pagedata: dataChunks(0,0,10)
+};
+// console.log("initial", initial);
+// console.log(window)
 
 export const reducer = (state = initial, { type, payload }) => {
-  
+  // console.log("initialData",state)
   switch (type) {
- 
     case FETCH_DATA: {
-      console.log("Fetchpayload",payload)
-      saveData("employees", payload)
+      console.log("Fetchpayload", payload);
+      saveData("employees", payload);
 
       return {
         ...state,
         emp: payload,
-        data: payload
+        data: payload,
       };
     }
-    
+
+    case CHUNKS_DATA: {
+      console.log("initialChunks", state);
+      console.log("ChunksPAyload", payload);
+      return {
+        ...state,
+        pagedata: payload,
+      };
+    }
 
     case ADD_EMPLOYEE_DATA: {
       // existingData("employees", payload)
       return {
         ...state,
         emp: [...state.emp, payload],
-        data : existingData("employees", payload)
+
+        data: existingData("employees", payload),
       };
     }
     case DELETE_EMPLOYEE_DATA: {
-     
       // deleteFromLS("employees", payload)
-      // console.log("delete", payload);
+      console.log("delete", payload);
 
-      // const filteredData = state.data.filter((emp) => emp.id !== payload);
-    
-      // console.log("filteredData",filteredData)
+      const filteredData = state.data.filter((emp) => emp.id !== payload);
+
+      console.log("filteredData",filteredData)
       return {
         ...state,
-        emp: deleteFromLS("employees", payload),
+        // emp: deleteFromLS("employees", payload),
+        pagedata: dataChunks(0,0,10),
         data: deleteFromLS("employees", payload),
       };
     }
@@ -64,12 +80,15 @@ export const reducer = (state = initial, { type, payload }) => {
         }
         return emp;
       });
-    // console.log("data",newData);
+
+      console.log("newdata",newData);
       return {
         ...state,
-        emp: newData
+        emp: saveData("employees", newData),
+        // data: saveData("employees", newData),
+        // data: newData,
+        pagedata: dataChunks(0,0,10),
       };
-      
     }
 
     case RESET_ALL_DATA: {
